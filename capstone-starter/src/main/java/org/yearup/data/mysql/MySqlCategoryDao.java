@@ -59,12 +59,12 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
     @Override
     public Category create(Category category) {
         // create a new category
-        String query="INSERT INTO categories (category_id,name,description) VALUES (?, ?, ?)";
-        try(Connection connection=getConnection()){
-            PreparedStatement statement= connection.prepareStatement(query);
+        String query = "INSERT INTO categories (category_id,name,description) VALUES (?, ?, ?)";
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, category.getCategoryId());
-            statement.setString( 2,category.getName());
-            statement.setString(3,category.getDescription());
+            statement.setString(2, category.getName());
+            statement.setString(3, category.getDescription());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -76,12 +76,22 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
     @Override
     public void update(int categoryId, Category category) {
         // update category
-
+        String query = "UPDATE categories SET name=?, description=? WHERE category_id=?";
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1,category.getName());
+            statement.setString(2,category.getDescription());
+            statement.setInt(3,categoryId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void delete(int categoryId) {
         // delete category
+
     }
 
     private Category mapRow(ResultSet row) throws SQLException {
