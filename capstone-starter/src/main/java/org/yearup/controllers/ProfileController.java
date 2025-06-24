@@ -45,5 +45,16 @@ public class ProfileController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Oops...our bad");
         }
     }
+    @PutMapping
+    public void updateProfile(Profile profile,Principal principal){
+        try {
+            String username= principal.getName();
+            User user=userDao.getByUserName(username);
+            int userid= user.getId();
+            profileDao.update(profile,userid);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Oops ....Our bad");
+        }
+    }
 
 }
