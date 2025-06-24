@@ -72,13 +72,13 @@ public class ShoppingCartController {
     // https://localhost:8080/cart/products/15 (15 is the productId to be updated)
     // the BODY should be a ShoppingCartItem - quantity is the only value that will be updated
     @PutMapping("/products/{id}")
-    public ShoppingCart update(@PathVariable int id, @RequestBody ShoppingCartItem item, Principal principal){
+    public void update(@PathVariable int id, @RequestBody ShoppingCartItem item, Principal principal){
         try{
             String username= principal.getName();
             User user=userDao.getByUserName(username);
             int userid= user.getId();
 
-           return shoppingCartDao.update(userid,id,item.getQuantity());
+            shoppingCartDao.update(userid,id,item.getQuantity());
         }catch (Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Oops.....our bad.");
         }
