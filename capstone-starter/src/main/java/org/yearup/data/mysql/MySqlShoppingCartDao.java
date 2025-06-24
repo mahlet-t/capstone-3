@@ -1,5 +1,6 @@
 package org.yearup.data.mysql;
 
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 import org.yearup.data.ProductDao;
 import org.yearup.data.ShoppingCartDao;
@@ -51,8 +52,8 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
         String query = "INSERT INTO shopping_Cart(user_id, product_id, quantity) VALUES(?, ?, 1)";
         try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1,userid);
-            statement.setInt(2,productId);
+            statement.setInt(1, userid);
+            statement.setInt(2, productId);
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -62,7 +63,16 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
 
     @Override
     public ShoppingCart update(int userId, int productId, int quantity) {
-
+        String query = "Update shopping_cart SET quantity = ? WHERE user_id = ? AND product_id = ?";
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1,quantity);
+            statement.setInt(2,userId);
+            statement.setInt(3,productId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
