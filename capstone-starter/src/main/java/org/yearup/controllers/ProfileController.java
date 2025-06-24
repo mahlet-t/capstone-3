@@ -1,10 +1,9 @@
 package org.yearup.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.ProfileDao;
 import org.yearup.data.UserDao;
 import org.yearup.models.Profile;
@@ -25,10 +24,26 @@ public class ProfileController {
     }
     @GetMapping
     public Profile getProfile(Principal principal){
-       String username= principal.getName();
-       User user=userDao.getByUserName(username);
-       int userid= user.getId();
-       return profileDao.getByUserId(userid);
+        try {
+            String username = principal.getName();
+            User user = userDao.getByUserName(username);
+            int userid = user.getId();
+            return profileDao.getByUserId(userid);
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Oops....our bad ");
+        }
+    }
+    @PostMapping
+    public Profile creatProfile(Profile profile,Principal principal){
+        try {
+            String username = principal.getName();
+            User user = userDao.getByUserName(username);
+            int userid = user.getId();
+            profile.setUserId(userid);
+            return profileDao.create(profile);
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Oops...our bad");
+        }
     }
 
 }
