@@ -20,8 +20,9 @@ public class ProfileController {
     private UserDao userDao;
     @Autowired
 
-    public ProfileController(ProfileDao profileDao) {
+    public ProfileController(ProfileDao profileDao,UserDao userDao) {
         this.profileDao = profileDao;
+       this.userDao=userDao;
     }
     @GetMapping
     public List<Profile> getProfile(Principal principal){
