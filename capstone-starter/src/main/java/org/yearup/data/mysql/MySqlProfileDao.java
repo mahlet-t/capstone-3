@@ -68,14 +68,14 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
         }
     }
         @Override
-    public List<Profile> getByUserId(int userId) {
-            List<Profile> profiles=new ArrayList<>();
+    public Profile getByUserId(int userId) {
+
         String query="SELECT * FROM profiles WHERE user_id=?";
         try(Connection connection=getConnection()){
             PreparedStatement statement= connection.prepareStatement(query);
             statement.setInt(1,userId);
             ResultSet set= statement.executeQuery();
-            while (set.next()){
+            if (set.next()){
               int userid= set.getInt("user_id");
               String firstname=set.getString("first_name");
               String lastname=set.getString("last_name");
@@ -85,13 +85,14 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
               String city=set.getString("city");
               String sate =set.getString("state");
               String zip=set.getString("zip");
-              profiles.add(new Profile(userid,firstname,lastname,phone,email,address,city,sate,zip));
+             return (new Profile(userid,firstname,lastname,phone,email,address,city,sate,zip));
+            } else {
+                return null;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-           return profiles;
-    }
+
 
 
 

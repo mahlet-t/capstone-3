@@ -25,14 +25,14 @@ public class ProfileController {
        this.userDao=userDao;
     }
     @GetMapping
-    public List<Profile> getProfile(Principal principal){
+    public Profile getProfile(Principal principal) {
         try {
             String username = principal.getName();
             User user = userDao.getByUserName(username);
             int userid = user.getId();
-            return profileDao.getByUserId(userid);
-        }catch (Exception e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Oops....our bad ");
+           return profileDao.getByUserId(userid);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops....our bad ");
         }
     }
     @PostMapping
