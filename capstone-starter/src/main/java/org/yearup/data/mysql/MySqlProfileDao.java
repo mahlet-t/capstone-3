@@ -6,6 +6,8 @@ import org.yearup.data.ProfileDao;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
@@ -67,8 +69,29 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
         }
     }
         @Override
-    public Profile getByUserId(int userId) {
-        return null;
+    public List<Profile> getByUserId(int userId) {
+            List<Profile> profiles=new ArrayList<>();
+        String query="SELECT * FROM profiles WHERE user_id=?";
+        try(Connection connection=getConnection()){
+            PreparedStatement statement= connection.prepareStatement(query);
+            statement.setInt(1,userId);
+            ResultSet set= statement.executeQuery();
+            while (set.next()){
+              int userid= set.getInt("user_id");
+              String firstname=set.getString("first_name");
+              String lastname=set.getString("last_name");
+              String phone=set.getString("phone");
+              String email=set.getString("email");
+              String address=set.getString("address");
+              String city=set.getString("city");
+              String sate =set.getString("state");
+              String zip=set.getString("zip");
+              profiles.add(new Profile(userid,firstname,lastname,phone,email,address,city,sate,zip));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+           return profiles;
     }
 
 

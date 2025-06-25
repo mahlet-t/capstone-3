@@ -10,6 +10,7 @@ import org.yearup.models.Profile;
 import org.yearup.models.User;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("profile")
@@ -23,7 +24,7 @@ public class ProfileController {
         this.profileDao = profileDao;
     }
     @GetMapping
-    public Profile getProfile(Principal principal){
+    public List<Profile> getProfile(Principal principal){
         try {
             String username = principal.getName();
             User user = userDao.getByUserName(username);
