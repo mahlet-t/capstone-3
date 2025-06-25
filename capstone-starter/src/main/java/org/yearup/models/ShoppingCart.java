@@ -2,6 +2,7 @@ package org.yearup.models;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ShoppingCart
@@ -10,6 +11,7 @@ public class ShoppingCart
 
     public Map<Integer, ShoppingCartItem> getItems()
     {
+
         return items;
     }
 
