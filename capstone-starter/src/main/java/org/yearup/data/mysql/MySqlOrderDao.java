@@ -7,10 +7,7 @@ import org.yearup.models.ShoppingCartItem;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -28,7 +25,7 @@ public class MySqlOrderDao extends MySqlDaoBase implements OrderDao {
         try(Connection connection=getConnection()){
             PreparedStatement statement= connection.prepareStatement(query,PreparedStatement.RETURN_GENERATED_KEYS);
             statement.setInt(1,profile.getUserId());
-            statement.setDate(2,java.sql.Date.valueOf(LocalDate.now()));
+            statement.setDate(2, Date.valueOf(LocalDate.now()));
             statement.setString(3, profile.getAddress());
             statement.setString(4, profile.getCity());
             statement.setString(5, profile.getState());
@@ -36,9 +33,23 @@ public class MySqlOrderDao extends MySqlDaoBase implements OrderDao {
             statement.setBigDecimal(7, BigDecimal.ZERO);
             statement.executeUpdate();
             ResultSet set= statement.getGeneratedKeys();
+            int orderId = 0;
             if (set.next()){
-                int orderId=set.getInt(1);
-
+              orderId= set.getInt(1);
+            }
+            for (ShoppingCartItem item: cartItems.values()){
+                String itemQuery="INSERT INTO order_line_item(order_id, product_id, sales_price, quantity, discount) VALUES(?, ?, ?, ?, ?);";
+                PreparedStatement stm= connection.prepareStatement(itemQuery,PreparedStatement.RETURN_GENERATED_KEYS);
+                stm.setInt(1,orderId);
+                stm.setInt(2,item.getProductId());
+                stm.setBigDecimal(3,item.getProduct().getPrice());
+                stm.setInt(4,item.getQuantity());
+                stm.setBigDecimal(5,item.getDiscountPercent());
+                statement.executeUpdate();
+                ResultSet key=statement.getGeneratedKeys();
+                if (key.next()){
+                  set.getInt(1);
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
