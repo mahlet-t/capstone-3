@@ -14,7 +14,7 @@
         <input type="range" class="form-range" id="min-price" min="0" max="1500" value="0" onchange="setMinPrice(this)">
     </div>
     <div>
-        <label for="max-price" class="form-label">Minimum Price: $ <span id="max-price-display">1500</span></label>
+        <label for="max-price" class="form-label">Maximum Price: $ <span id="max-price-display">1500</span></label>
         <input type="range" class="form-range" id="max-price" min="0" max="1500" value="1500" onchange="setMaxPrice(this)">
     </div>
 
@@ -53,3 +53,16 @@
 
 </div>
 <div id="content" class="content"></div>
+<div class="filter-box">&nbsp;</div>
+
+<div id="Add-Category" class="content-form">
+    <h1>Add New Category</h1>
+
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="categoryName" placeholder="Category Name">
+        <label for="categoryName">Category Name</label>
+    </div>
+
+    <button class="btn btn-success" onclick="addNewCategory()">Add Category</button>
+<div id="category-list" style="margin-top: 20px;"></div>
+</div>

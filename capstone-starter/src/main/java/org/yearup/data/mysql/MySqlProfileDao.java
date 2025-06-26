@@ -70,32 +70,29 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
         @Override
     public Profile getByUserId(int userId) {
 
-        String query="SELECT * FROM profiles WHERE user_id=?";
-        try(Connection connection=getConnection()){
-            PreparedStatement statement= connection.prepareStatement(query);
-            statement.setInt(1,userId);
-            ResultSet set= statement.executeQuery();
-            if (set.next()){
-              int userid= set.getInt("user_id");
-              String firstname=set.getString("first_name");
-              String lastname=set.getString("last_name");
-              String phone=set.getString("phone");
-              String email=set.getString("email");
-              String address=set.getString("address");
-              String city=set.getString("city");
-              String sate =set.getString("state");
-              String zip=set.getString("zip");
-             return (new Profile(userid,firstname,lastname,phone,email,address,city,sate,zip));
-            } else {
-                return null;
+            String query = "SELECT * FROM profiles WHERE user_id=?";
+            try (Connection connection = getConnection()) {
+                PreparedStatement statement = connection.prepareStatement(query);
+                statement.setInt(1, userId);
+                ResultSet set = statement.executeQuery();
+                if (set.next()) {
+                    int userid = set.getInt("user_id");
+                    String firstname = set.getString("first_name");
+                    String lastname = set.getString("last_name");
+                    String phone = set.getString("phone");
+                    String email = set.getString("email");
+                    String address = set.getString("address");
+                    String city = set.getString("city");
+                    String sate = set.getString("state");
+                    String zip = set.getString("zip");
+                    return (new Profile(userid, firstname, lastname, phone, email, address, city, sate, zip));
+                } else {
+                    return null;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+
+
         }
-
-
-
-
-
-
 }

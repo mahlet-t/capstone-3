@@ -1,5 +1,6 @@
 package org.yearup.data.mysql;
 
+import org.springframework.stereotype.Component;
 import org.yearup.data.OrderDao;
 import org.yearup.data.ShoppingCartDao;
 import org.yearup.models.Profile;
@@ -9,9 +10,9 @@ import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Map;
 
+import java.util.Map;
+@Component
 public class MySqlOrderDao extends MySqlDaoBase implements OrderDao {
     private ShoppingCartDao shoppingCartDao;
     public MySqlOrderDao(DataSource dataSource,ShoppingCartDao shoppingCartDao) {
@@ -38,19 +39,20 @@ public class MySqlOrderDao extends MySqlDaoBase implements OrderDao {
               orderId= set.getInt(1);
             }
             for (ShoppingCartItem item: cartItems.values()){
-                String itemQuery="INSERT INTO order_line_item(order_id, product_id, sales_price, quantity, discount) VALUES(?, ?, ?, ?, ?);";
+                String itemQuery="INSERT INTO order_line_items (order_id, product_id, sales_price, quantity, discount) VALUES(?, ?, ?, ?, ?);";
                 PreparedStatement stm= connection.prepareStatement(itemQuery,PreparedStatement.RETURN_GENERATED_KEYS);
                 stm.setInt(1,orderId);
                 stm.setInt(2,item.getProductId());
                 stm.setBigDecimal(3,item.getProduct().getPrice());
                 stm.setInt(4,item.getQuantity());
                 stm.setBigDecimal(5,item.getDiscountPercent());
-                statement.executeUpdate();
-                ResultSet key=statement.getGeneratedKeys();
+                stm.executeUpdate();
+                ResultSet key=stm.getGeneratedKeys();
                 if (key.next()){
                   set.getInt(1);
                 }
             }
+            shoppingCartDao.clearCart(profile.getUserId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

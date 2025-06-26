@@ -1,6 +1,8 @@
 package org.yearup.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +13,7 @@ import org.yearup.data.*;
 import org.yearup.models.*;
 
 import java.security.Principal;
-import java.util.List;
+
 import java.util.Map;
 
 @RestController
@@ -19,10 +21,10 @@ import java.util.Map;
 @CrossOrigin
 public class OrdersController {
     private OrderDao orderDao;
-    private ProfileDao profileDao
+    private ProfileDao profileDao;
     private ShoppingCartDao shoppingCartDao;
     private UserDao userDao;
-
+@Autowired
     public OrdersController(OrderDao orderDao, ProfileDao profileDao,UserDao userDao, ShoppingCartDao shoppingCartDao) {
         this.orderDao = orderDao;
         this.profileDao = profileDao;
@@ -31,7 +33,7 @@ public class OrdersController {
     }
 
    @PostMapping
-   public void addToOrder(Principal principal){
+   public ResponseEntity<String> addToOrder(Principal principal){
         try {
             String username= principal.getName();
             User user=userDao.getByUserName(username);
@@ -40,6 +42,7 @@ public class OrdersController {
             ShoppingCart cart=shoppingCartDao.getByUserId(userid);
           Map<Integer,ShoppingCartItem> items=cart.getItems();
             orderDao.addToOrder(profile,items);
+            return ResponseEntity.ok("Order placed successfully");
         }catch (Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Oops...our bad.");
         }

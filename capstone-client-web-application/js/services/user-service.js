@@ -93,7 +93,9 @@ class UserService {
 
         axios.post(url, register)
              .then(response => {
-                 console.log(response.data)
+             const data={message:"registered"};
+             templateBuilder.append("message",data,"errors")
+
              })
             .catch(error => {
 
@@ -141,6 +143,12 @@ class UserService {
 
         productService.enableButtons();
     }
+
+}
+window.Register =function (){
+const username=document.getElementById("username").value;
+const password=document.getElementById("password").value;
+userService.register(username,password,password);
 
 }
 

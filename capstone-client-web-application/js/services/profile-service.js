@@ -41,7 +41,32 @@ class ProfileService
              })
     }
 }
+window.Register= function() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
+    const url = `${config.baseUrl}/register`;
+
+    const user = {
+        username: username,
+        password: password,
+        role: "USER"
+    };
+
+    axios.post(url, user)
+        .then(() => {
+            const data = {
+                message: "✅ Registered successfully. You can now login."
+            };
+            templateBuilder.append("message", data, "errors");
+        })
+        .catch(() => {
+            const data = {
+                error: "Registration failed. Try a different username."
+            };
+            templateBuilder.append("error", data, "errors");
+        });
+}
 document.addEventListener("DOMContentLoaded", () => {
    profileService = new ProfileService();
 });

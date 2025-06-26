@@ -97,11 +97,38 @@ class ShoppingCartService {
 
         contentDiv.appendChild(cartHeader)
         main.appendChild(contentDiv);
+        const checkoutDiv = document.createElement("div");
+        checkoutDiv.classList.add("text-end", "mt-2");
+
+        const checkoutBtn = document.createElement("button");
+        checkoutBtn.id = "checkout-btn";
+        checkoutBtn.classList.add("btn", "btn-success");
+        checkoutBtn.innerText = "Checkout";
+        checkoutBtn.addEventListener("click", () => this.checkout());
+
+        checkoutDiv.appendChild(checkoutBtn);
+        contentDiv.appendChild(checkoutDiv);
+
+        const message = document.createElement("div");
+        message.id = "checkout-message";
+        message.classList.add("mt-2", "text-success");
+        message.style.display = "none";
+        message.innerHTML = "✅ Your order has been placed!";
+        contentDiv.appendChild(message);
 
         // let parent = document.getElementById("cart-item-list");
         this.cart.items.forEach(item => {
             this.buildItem(item, contentDiv)
         });
+        // 👉 Add total price section at the bottom
+        const totalContainer = document.createElement("div");
+        totalContainer.classList.add("text-end", "mt-4");
+
+        const totalText = document.createElement("h3");
+        totalText.innerText = `🧾 Total Price: $${this.cart.total.toFixed(2)}`;
+
+        totalContainer.appendChild(totalText);
+        contentDiv.appendChild(totalContainer);
     }
 
     buildItem(item, parent)
@@ -133,9 +160,45 @@ class ShoppingCartService {
         descriptionDiv.innerText = item.product.description;
         outerDiv.appendChild(descriptionDiv);
 
-        let quantityDiv = document.createElement("div")
-        quantityDiv.innerText = `Quantity: ${item.quantity}`;
-        outerDiv.appendChild(quantityDiv)
+let quantityDiv = document.createElement("div");
+quantityDiv.classList.add("quantity-controls");
+// ➖ minus button
+let minusBtn = document.createElement("button");
+minusBtn.innerText = "-";
+minusBtn.classList.add("btn", "btn-sm", "btn-secondary");
+minusBtn.addEventListener("click", () => {
+
+        cartService.updateQuantity(item.product.productId, - 1);
+
+});
+// Quantity label
+let quantitySpan = document.createElement("span");
+quantitySpan.innerText = ` ${item.quantity} `;
+quantitySpan.style.margin = "0 10px";
+
+// ➕ plus button
+let plusBtn = document.createElement("button");
+plusBtn.innerText = "+";
+plusBtn.classList.add("btn", "btn-sm", "btn-secondary");
+plusBtn.addEventListener("click", () => {
+    cartService.updateQuantity(item.product.productId, 1);
+});
+quantityDiv.appendChild(minusBtn);
+quantityDiv.appendChild(quantitySpan);
+quantityDiv.appendChild(plusBtn);
+
+
+// 🗑 Remove button
+let removeBtn = document.createElement("button");
+removeBtn.innerText = "🗑";
+removeBtn.classList.add("btn", "btn-sm", "btn-danger", "ms-3");
+ // adds margin-left
+removeBtn.addEventListener("click", () => {
+    cartService.removeItem(item.product.productId);
+});
+quantityDiv.appendChild(removeBtn);
+outerDiv.appendChild(quantityDiv);
+
 
 
         parent.appendChild(outerDiv);
@@ -172,6 +235,62 @@ class ShoppingCartService {
                  templateBuilder.append("error", data, "errors")
              })
     }
+    checkout() {
+        const url = `${config.baseUrl}/orders`;
+
+        axios.post(url)
+            .then(response => {
+                this.cart = {
+                    items: [],
+                    total: 0
+                };
+
+                this.updateCartDisplay();
+                this.loadCartPage();
+
+                const msg = document.getElementById("checkout-message");
+                msg.style.display = "block";
+            })
+            .catch(error => {
+                const data = {
+                    error: "Checkout failed."
+                };
+                templateBuilder.append("error", data, "errors");
+            });
+    }
+    updateQuantity(productId, newQuantity) {
+        const url = `${config.baseUrl}/cart/products/${productId}`;
+        console.log("error",productId,newQuantity)
+        axios.put(url, { quantity: newQuantity })
+            .then(response => {
+                this.setCart(response.data);
+                this.updateCartDisplay();
+                this.loadCartPage();
+            })
+            .catch(error => {
+            console.error("error",error)
+                const data = {
+                    error: "Update quantity failed."
+                };
+                templateBuilder.append("error", data, "errors");
+            });
+    }
+
+    removeItem(productId) {
+        const url = `${config.baseUrl}/cart/${productId}`;
+        axios.delete(url)
+            .then(response => {
+                this.setCart(response.data);
+                this.updateCartDisplay();
+                this.loadCartPage();
+            })
+            .catch(error => {
+                const data = {
+                    error: "Remove item failed."
+                };
+                templateBuilder.append("error", data, "errors");
+            });
+    }
 
     updateCartDisplay()
     {
@@ -186,9 +305,6 @@ class ShoppingCartService {
         }
     }
 }
-
-
-
 
 
 document.addEventListener('DOMContentLoaded', () => {
